@@ -1,0 +1,74 @@
+{
+  "entities": {
+    "User": {
+      "title": "User",
+      "description": "User profile information representing an authenticated user.",
+      "type": "object",
+      "properties": {
+        "uid": { "type": "string", "description": "Unique identifier for the user." },
+        "email": { "type": "string", "format": "email", "description": "User's email address." },
+        "displayName": { "type": "string", "description": "User's display name." },
+        "photoURL": { "type": "string", "description": "URL to the user's profile photo." },
+        "provider": { "type": "string", "description": "The authentication provider (e.g., google, apple, naver, kakao)." },
+        "createdAt": { "type": "string", "format": "date-time", "description": "When the user account was created." },
+        "updatedAt": { "type": "string", "format": "date-time", "description": "When the user profile was last updated." }
+      },
+      "required": ["uid", "provider", "createdAt", "updatedAt"]
+    },
+    "Order": {
+      "title": "Order",
+      "description": "Information about a completed product order.",
+      "type": "object",
+      "properties": {
+        "userId": { "type": "string" },
+        "items": { "type": "array" },
+        "total": { "type": "number" },
+        "status": { "type": "string", "enum": ["payment_pending", "ready", "shipping", "completed", "canceled"] },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "paymentMethod": { "type": "string" }
+      },
+      "required": ["userId", "items", "total", "status", "createdAt"]
+    },
+    "SiteData": {
+      "title": "SiteData",
+      "description": "Global configuration and content for the entire store.",
+      "type": "object",
+      "properties": {
+        "products": { "type": "array" },
+        "homeContent": { "type": "object" },
+        "footerContent": { "type": "object" },
+        "globalContent": { "type": "object" },
+        "detailPageContent": { "type": "object" },
+        "productListContent": { "type": "object" },
+        "curationDetails": { "type": "object" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      }
+    }
+  },
+  "firestore": {
+    "/config/site_data": {
+      "schema": "SiteData",
+      "description": "Global configuration and content. Note: Products are now in their own collection."
+    },
+    "/products/{productId}": {
+      "schema": "Product",
+      "description": "Individual product entries to avoid document size limits."
+    },
+    "/curation_details/{curationId}": {
+      "schema": "object",
+      "description": "Detailed content for curations to avoid document size limits."
+    },
+    "/users/{userId}": {
+      "schema": "User",
+      "description": "User document stored by their UID."
+    },
+    "/users/{userId}/orders/{orderId}": {
+      "schema": "Order",
+      "description": "Orders associated with a specific user."
+    },
+    "/users/{userId}/wishlist/{wishId}": {
+      "schema": "object",
+      "description": "Products saved by the user in their wishlist."
+    }
+  }
+}

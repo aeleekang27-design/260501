@@ -1,0 +1,8 @@
+{
+  "name": "Remix: 더 바른 농장",
+  "description": "엄격하게 선별된 자연의 정수, 더 바른 농장 프리미엄 큐레이션 마켓",
+  "requestFramePermissions": [
+    "display-capture"
+  ],
+  "majorCapabilities": []
+}

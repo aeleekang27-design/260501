@@ -1,0 +1,44 @@
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700;900&family=Noto+Serif+KR:wght@400;700;900&display=swap');
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "Noto Sans KR", ui-sans-serif, system-ui, sans-serif;
+  --font-serif: "Noto Serif KR", serif;
+  
+  --color-primary: #003D32;
+  --color-secondary: #FF6B35;
+  --color-surface: #F8F9FA;
+}
+
+@layer base {
+  body {
+    @apply bg-surface text-stone-800 font-sans antialiased;
+  }
+
+  /* Keyboard Accessibility (Tab Focus) */
+  :focus-visible {
+    @apply outline-none ring-2 ring-primary ring-offset-2 ring-offset-white;
+  }
+}
+
+@utility editorial-shadow {
+  box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.05);
+}
+
+@layer components {
+  .premium-card {
+    @apply bg-white rounded-[16px] editorial-shadow border border-stone-100;
+  }
+
+  .btn-primary {
+    @apply bg-primary text-white py-4 px-8 rounded-lg font-bold transition-all hover:opacity-90 active:scale-95 text-center;
+  }
+
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
+}

@@ -1,0 +1,103 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // 0. Default deny
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    // --- Helpers ---
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isOwner(userId) {
+      return isSignedIn() && request.auth.uid == userId;
+    }
+
+    function isValidId(id) {
+      return id is string && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-:]+$');
+    }
+
+    function incoming() {
+      return request.resource.data;
+    }
+
+    function existing() {
+      return resource.data;
+    }
+
+    // --- User Validation ---
+    function isValidUser(data) {
+      return data.uid is string && data.uid.size() <= 128 &&
+             (data.email == null || (data.email is string && data.email.size() <= 256)) &&
+             data.provider is string && (data.provider in ['google', 'apple', 'naver', 'kakao', 'google.com', 'apple.com', 'custom', 'email']) &&
+             (data.phone == null || (data.phone is string && data.phone.size() <= 20)) &&
+             data.createdAt == request.time &&
+             data.updatedAt == request.time;
+    }
+
+    function isValidUserUpdate(data) {
+      return (data.get('uid', existing().uid) == existing().uid) &&
+             (data.get('email', existing().get('email', null)) == existing().get('email', null)) &&
+             (data.get('provider', existing().provider) == existing().provider) &&
+             (data.get('createdAt', existing().get('createdAt', null)) == existing().get('createdAt', null)) &&
+             data.updatedAt == request.time;
+    }
+
+    function isValidOrder(data) {
+      return data.keys().hasAll(['userId', 'items', 'total', 'status', 'createdAt'])
+        && data.userId == request.auth.uid
+        && data.total is number
+        && data.items is list
+        && data.status in ['payment_pending', 'ready', 'shipping', 'completed', 'canceled']
+        && data.createdAt == request.time;
+    }
+
+    function isAdmin() {
+      return isSignedIn() && 
+             request.auth.token.email == 'aeleekang27@gmail.com' && 
+             request.auth.token.email_verified == true;
+    }
+
+    // --- Collection Rules ---
+    match /config/{configId} {
+      allow read: if true;
+      allow write: if isAdmin() && isValidId(configId);
+    }
+
+    match /products/{productId} {
+      allow read: if true;
+      allow write: if isAdmin() && isValidId(productId);
+    }
+
+    match /curation_details/{curationId} {
+      allow read: if true;
+      allow write: if isAdmin() && isValidId(curationId);
+    }
+
+    match /users/{userId} {
+      allow get: if isOwner(userId);
+      allow create: if isOwner(userId) && isValidUser(incoming()) && isValidId(userId);
+      allow update: if isOwner(userId) && isValidUserUpdate(incoming()) && 
+                    incoming().diff(existing()).affectedKeys().hasOnly(['displayName', 'photoURL', 'phone', 'updatedAt']);
+
+      // Cart subcollection
+      match /cart/{cartId} {
+        allow read, write: if isOwner(userId) && isValidId(cartId);
+      }
+
+      // Wishlist subcollection
+      match /wishlist/{wishId} {
+        allow read, write: if isOwner(userId) && isValidId(wishId);
+      }
+
+      // Orders subcollection
+      match /orders/{orderId} {
+        allow read: if isOwner(userId);
+        allow create: if isOwner(userId) && isValidOrder(incoming()) && isValidId(orderId);
+      }
+    }
+  }
+}
