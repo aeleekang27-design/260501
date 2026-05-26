@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { User, UserPlus, ClipboardList, ShoppingCart, Plus, X, LogOut } from 'lucide-react';
+import { User, UserPlus, ClipboardList, ShoppingCart, Plus, X, LogOut, LayoutDashboard } from 'lucide-react';
 import { Reorder, motion } from 'motion/react';
 import EditableText from './EditableText';
 import EditableImage from './EditableImage';
@@ -46,7 +46,7 @@ export default function Header({
   const location = useLocation();
   const navigate = useNavigate();
   const isHome = location.pathname === '/';
-  const { user, logout } = useAuth();
+  const { user, logout, isAdmin } = useAuth();
 
   const handleCategoryClick = (id: string) => {
     if (id === '이벤트') {
@@ -92,6 +92,16 @@ export default function Header({
           {/* User Menu - Right Aligned (Consolidated into 1 row as requested) */}
           <div className="flex-1 flex justify-end">
              <div className="flex flex-wrap items-center justify-end gap-3 sm:gap-4 md:gap-6 scrollbar-hide py-2 px-1">
+                {isAdmin && (
+                  <Link to="/admin" className="flex flex-col items-center gap-1 group shrink-0">
+                    <div className="w-8 h-8 md:w-10 md:h-10 rounded-full bg-[#003D27] text-white flex items-center justify-center transition-all animate-pulse shadow-lg">
+                       <LayoutDashboard size={18} />
+                    </div>
+                    <span className="text-[10px] md:text-[11px] font-black text-[#003D27] whitespace-nowrap">
+                       관리자 모드
+                    </span>
+                  </Link>
+                )}
                 {user ? (
                   <button onClick={logout} className="flex flex-col items-center gap-1 group shrink-0">
                     <div className="w-8 h-8 md:w-10 md:h-10 rounded-full bg-stone-50 group-hover:bg-primary/5 flex items-center justify-center transition-all overflow-hidden">

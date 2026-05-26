@@ -34,6 +34,15 @@ export default function EventPage({ products, content, onUpdateContent }: EventP
       link: '/?filter=과일'
     },
     {
+      id: 'midnight',
+      tag: 'DAILY FLASH',
+      title: '자정 전 주문 시 새벽배송',
+      desc: '오늘 밤 12시까지 주문하면, 내일 아침 현관 앞에 신선함이 도착합니다.',
+      img: 'https://images.unsplash.com/photo-1586769852836-bc069f19e1b6?q=80&w=1000&auto=format&fit=crop',
+      color: 'bg-blue-600',
+      link: '/products'
+    },
+    {
       id: 'gift',
       tag: 'PREMIUM GIFT',
       title: '감사의 마음을 전하는 선물세트',
@@ -46,6 +55,32 @@ export default function EventPage({ products, content, onUpdateContent }: EventP
 
   return (
     <div className="min-h-screen bg-[#F8F9FA] pb-32">
+      {/* Floating Coupon */}
+      <motion.div 
+        initial={{ y: 100, opacity: 0 }}
+        animate={{ y: 0, opacity: 1 }}
+        transition={{ delay: 1 }}
+        className="fixed bottom-32 right-8 z-[80] hidden lg:block"
+      >
+        <div className="bg-[#003D27] text-white p-6 rounded-3xl shadow-2xl border border-white/10 w-64 group overflow-hidden">
+          <div className="absolute -right-4 -top-4 w-24 h-24 bg-white/10 rounded-full blur-2xl group-hover:bg-white/20 transition-all"></div>
+          <div className="relative space-y-4">
+            <div className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-primary">
+              <Tag size={12} /> Special Coupon
+            </div>
+            <div className="space-y-1">
+              <h4 className="text-xl font-bold leading-tight">이벤트 페이지 전용<br/>할인 쿠폰팩</h4>
+              <p className="text-[11px] text-white/50">모든 회원 대상 바로 다운로드</p>
+            </div>
+            <button 
+              onClick={() => alert('쿠폰이 발급되었습니다! 결제 시 사용 가능합니다.')}
+              className="w-full py-3 bg-white text-[#003D27] rounded-xl font-bold text-xs hover:scale-105 active:scale-95 transition-all shadow-lg"
+            >
+              쿠폰팩 전체 받기
+            </button>
+          </div>
+        </div>
+      </motion.div>
       {/* Header Section */}
       <section className="bg-white pt-24 pb-16 px-6 relative overflow-hidden">
         <div className="absolute top-0 right-0 w-96 h-96 bg-primary/5 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2" />
@@ -76,6 +111,49 @@ export default function EventPage({ products, content, onUpdateContent }: EventP
               />
             </p>
           </motion.div>
+        </div>
+      </section>
+
+      {/* Flash Sale Banner */}
+      <section className="px-6 -mt-8 relative z-10">
+        <div className="max-w-7xl mx-auto">
+          <div className="bg-[#003D27] rounded-[40px] p-8 md:p-12 overflow-hidden relative group editorial-shadow">
+            <div className="absolute inset-0 opacity-10">
+              <div className="absolute top-0 left-0 w-full h-full bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-white via-transparent to-transparent"></div>
+            </div>
+            
+            <div className="relative flex flex-col md:flex-row items-center justify-between gap-8">
+              <div className="space-y-4 text-center md:text-left">
+                <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/20 backdrop-blur-md text-white text-[10px] font-black uppercase tracking-widest">
+                  <span className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse"></span>
+                  Live Flash Sale
+                </div>
+                <h3 className="text-3xl md:text-4xl font-serif font-bold text-white tracking-tight">
+                  <EditableText value={content.flashSaleTitle || "오늘만 이 가격! 타임 세일"} onSave={(val) => onUpdateContent('flashSaleTitle', val)} />
+                </h3>
+              </div>
+
+              <div className="flex items-center gap-4 md:gap-8">
+                <div className="flex gap-2 md:gap-4">
+                  {[
+                    { label: '주말특가', time: '12' },
+                    { label: '남은시간', time: '08' },
+                    { label: '종료임박', time: '45' }
+                  ].map((t, i) => (
+                    <div key={i} className="flex flex-col items-center">
+                      <div className="w-16 h-16 md:w-20 md:h-20 bg-white/10 backdrop-blur-xl border border-white/10 rounded-2xl flex items-center justify-center text-3xl font-black text-white">
+                        {t.time}
+                      </div>
+                      <span className="text-[10px] font-bold text-white/40 uppercase mt-2 tracking-widest">{t.label}</span>
+                    </div>
+                  ))}
+                </div>
+                <Link to="/products" className="w-16 h-16 md:w-20 md:h-20 rounded-full bg-primary flex items-center justify-center text-white hover:scale-110 transition-transform shadow-xl">
+                  <ArrowRight size={24} />
+                </Link>
+              </div>
+            </div>
+          </div>
         </div>
       </section>
 

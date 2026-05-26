@@ -21,7 +21,9 @@ import MyPage from './pages/MyPage';
 import Checkout from './pages/Checkout';
 import OrderDetail from './pages/OrderDetail';
 import EventPage from './pages/Event';
-import { Eye, ShoppingCart, User } from 'lucide-react';
+import AdminDashboard from './pages/AdminDashboard';
+import { Eye, ShoppingCart, User, X } from 'lucide-react';
+import { motion, AnimatePresence } from 'motion/react';
 
 // --- Floating Bottom Tab Bar for Mobile/Quick Navigation ---
 const QuickTabBar = () => {
@@ -51,6 +53,59 @@ const QuickTabBar = () => {
             </button>
           ))}
        </div>
+    </div>
+  );
+};
+const PromoPopup = ({ isOpen, onClose }: { isOpen: boolean, onClose: () => void }) => {
+  if (!isOpen) return null;
+  return (
+    <div className="fixed inset-0 z-[200] flex items-center justify-center p-6 bg-black/60 backdrop-blur-sm">
+      <motion.div 
+        initial={{ opacity: 0, scale: 0.9, y: 20 }}
+        animate={{ opacity: 1, scale: 1, y: 0 }}
+        className="bg-white w-full max-w-lg rounded-[40px] overflow-hidden shadow-2xl relative"
+      >
+        <button 
+          onClick={onClose}
+          className="absolute top-6 right-6 z-10 w-10 h-10 rounded-full bg-black/10 hover:bg-black/20 flex items-center justify-center text-black/60 transition-all"
+        >
+          <X size={20} />
+        </button>
+        <div className="relative aspect-[4/5]">
+          <img 
+            src="https://images.unsplash.com/photo-1610832958506-aa56368176cf?q=80&w=1000&auto=format&fit=crop" 
+            alt="Promo" 
+            className="w-full h-full object-cover"
+          />
+          <div className="absolute inset-0 bg-gradient-to-t from-[#003D27] via-transparent to-transparent flex flex-col justify-end p-12 text-white">
+            <div className="space-y-4">
+              <span className="inline-block px-3 py-1 rounded-full bg-white/20 backdrop-blur-md text-[10px] font-black uppercase tracking-widest border border-white/30">
+                Seasonal Event
+              </span>
+              <h3 className="text-3xl font-serif font-bold leading-tight">
+                오늘 주문하고<br/>내일 새벽에 받으세요
+              </h3>
+              <p className="text-white/60 text-sm font-light leading-relaxed">
+                더 바른 농장의 신규 가입 혜택과<br/>봄맞이 첫 주문 50% 쿠폰을 놓치지 마세요.
+              </p>
+              <div className="pt-4 flex gap-3 text-xs font-bold">
+                 <button 
+                   onClick={() => { onClose(); window.location.href = '/event'; }}
+                   className="flex-1 h-14 bg-white text-[#003D27] rounded-2xl hover:scale-[1.02] transition-all shadow-xl"
+                 >
+                   혜택 상세보기
+                 </button>
+                 <button 
+                   onClick={onClose}
+                   className="px-6 h-14 bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl hover:bg-white/20 transition-all"
+                 >
+                   오늘 하루 닫기
+                 </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </motion.div>
     </div>
   );
 };
@@ -139,7 +194,9 @@ const INITIAL_EVENT_PAGE_CONTENT = {
 };
 
 export default function App() {
-  const { user } = useAuth();
+  const { user, isAdmin } = useAuth();
+  const navigate = useNavigate();
+  const location = useLocation();
   const [products, setProducts] = useState<Product[]>(() => {
     try {
       const saved = localStorage.getItem('bareun_farm_products');
@@ -205,6 +262,19 @@ export default function App() {
     }
   });
 
+  const [showPromo, setShowPromo] = useState(false);
+
+  useEffect(() => {
+    const hasSeenPromo = sessionStorage.getItem('hasSeenPromo');
+    if (!hasSeenPromo) {
+      const timer = setTimeout(() => {
+        setShowPromo(true);
+        sessionStorage.setItem('hasSeenPromo', 'true');
+      }, 1500);
+      return () => clearTimeout(timer);
+    }
+  }, []);
+
   const [productListContent, setProductListContent] = useState(() => {
     const saved = localStorage.getItem('bareun_farm_product_list');
     const defaultContent = {
@@ -251,8 +321,6 @@ export default function App() {
   });
 
   const [filter, setFilter] = useState('전체');
-
-  const location = useLocation();
 
   // 1. Initial Load & Sync from Firestore (Global Config & Products)
   useEffect(() => {
@@ -587,27 +655,45 @@ export default function App() {
   };
 
   const cartCount = cartItems.reduce((sum, item) => sum + item.quantity, 0);
+  const isAdminPath = location.pathname.startsWith('/admin');
 
   return (
     <div className="flex flex-col min-h-screen bg-surface">
-      <Header 
-        cartCount={cartCount} 
-        storeName={globalContent.storeName}
-        onUpdateStoreName={(val) => updateGlobalContent('storeName', val)}
-        content={globalContent}
-        onUpdateContent={updateGlobalContent}
-        categories={productListContent.categories}
-        filter={filter}
-        onSetFilter={setFilter}
-        onUpdateCategory={updateProductListCategory}
-        onDeleteCategory={handleDeleteCategory}
-        onReorderCategory={handleReorderCategories}
-        onCreateCategory={handleCreateCategory}
-        onUpdateCategoryFontSize={updateProductListCategoryFontSize}
-      />
+      {!isAdminPath && (
+        <Header 
+          cartCount={cartCount} 
+          storeName={globalContent.storeName}
+          onUpdateStoreName={(val) => updateGlobalContent('storeName', val)}
+          content={globalContent}
+          onUpdateContent={updateGlobalContent}
+          categories={productListContent.categories}
+          filter={filter}
+          onSetFilter={setFilter}
+          onUpdateCategory={updateProductListCategory}
+          onDeleteCategory={handleDeleteCategory}
+          onReorderCategory={handleReorderCategories}
+          onCreateCategory={handleCreateCategory}
+          onUpdateCategoryFontSize={updateProductListCategoryFontSize}
+        />
+      )}
       
       <div className="flex-1">
         <Routes>
+          <Route 
+            path="/admin" 
+            element={
+              isAdmin ? (
+                <AdminDashboard products={products} onUpdateProduct={handleUpdateProduct} />
+              ) : (
+                <div className="min-h-screen flex items-center justify-center">
+                  <div className="text-center">
+                    <h2 className="text-2xl font-bold mb-4">접근 권한이 없습니다.</h2>
+                    <button onClick={() => navigate('/')} className="text-primary hover:underline">홈으로 돌아가기</button>
+                  </div>
+                </div>
+              )
+            } 
+          />
           <Route 
             path="/" 
             element={
@@ -690,8 +776,13 @@ export default function App() {
         </Routes>
       </div>
 
-      <Footer content={footerContent} onUpdate={updateFooterContent} />
-      <QuickTabBar />
+      {!isAdminPath && (
+        <>
+          <Footer content={footerContent} onUpdate={updateFooterContent} />
+          <QuickTabBar />
+          <PromoPopup isOpen={showPromo} onClose={() => setShowPromo(false)} />
+        </>
+      )}
     </div>
   );
 }

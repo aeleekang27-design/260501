@@ -16,6 +16,7 @@ import { auth, db } from '../lib/firebase';
 
 interface AuthContextType {
   user: User | null;
+  isAdmin: boolean;
   loading: boolean;
   isAuthenticating: boolean;
   loginWithGoogle: () => Promise<void>;
@@ -31,6 +32,7 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
+  const isAdmin = user?.email === 'aeleekang27@gmail.com';
   const [loading, setLoading] = useState(true);
   const [isAuthenticating, setIsAuthenticating] = useState(false);
 
@@ -242,7 +244,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   return (
     <AuthContext.Provider value={{
-      user, loading, isAuthenticating, 
+      user, isAdmin, loading, isAuthenticating, 
       loginWithGoogle, loginWithApple, loginWithNaver, loginWithKakao, 
       logout, signup, loginEmailPassword
     }}>

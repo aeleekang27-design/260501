@@ -10,9 +10,31 @@ interface FooterProps {
 
 export default function Footer({ content, onUpdate }: FooterProps) {
   return (
-    <footer className="bg-white border-t border-stone-100 py-20 px-6">
-      <div className="max-w-7xl mx-auto text-center">
-        <div className="flex flex-col items-center gap-4 mb-8">
+    <footer className="bg-white border-t border-stone-100 pt-32 pb-20 px-6">
+      <div className="max-w-7xl mx-auto">
+        {/* Newsletter Section */}
+        <div className="mb-32 text-center max-w-2xl mx-auto space-y-10">
+           <div className="space-y-4">
+              <h3 className="text-3xl md:text-4xl font-serif font-bold text-stone-900 tracking-tight">더 바른 소식을 메일로 받으세요</h3>
+              <p className="text-stone-500 font-light leading-relaxed">매주 수요일, 산지의 신선한 소식과 회원 전용 혜택을 보내드립니다.</p>
+           </div>
+           <div className="relative group">
+              <input 
+                type="email" 
+                placeholder="이메일을 입력해주세요" 
+                className="w-full h-16 bg-stone-50 border border-stone-100 rounded-2xl px-8 text-sm outline-none focus:border-stone-200 focus:bg-white transition-all shadow-sm"
+              />
+              <button 
+                className="absolute right-2 top-2 bottom-2 px-8 bg-[#003D27] text-white text-xs font-bold rounded-xl hover:bg-stone-900 transition-all active:scale-[0.98]"
+                onClick={() => alert('신청이 완료되었습니다. 감사합니다!')}
+              >
+                구독하기
+              </button>
+           </div>
+        </div>
+
+        <div className="text-center">
+          <div className="flex flex-col items-center gap-4 mb-8">
             {content.footerLogo && (
               <div className="w-24 h-24 rounded-2xl overflow-hidden mb-2 shadow-sm border border-stone-100">
                 <EditableImage 
@@ -65,6 +87,7 @@ export default function Footer({ content, onUpdate }: FooterProps) {
               />
           </div>
         )}
+      </div>
       </div>
     </footer>
   );

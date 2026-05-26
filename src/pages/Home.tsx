@@ -127,6 +127,14 @@ export default function Home({
                        detailUrl={`/product/${p.id}`}
                        className="w-full h-full"
                      />
+                     {/* Promotion Badges */}
+                     <div className="absolute top-4 right-4 flex flex-col gap-2 z-10 pointer-events-none">
+                        {p.price < 50000 ? (
+                           <span className="bg-orange-500 text-white text-[9px] font-black px-2 py-1 rounded-sm shadow-lg uppercase tracking-widest">Hot</span>
+                        ) : (
+                           <span className="bg-primary text-white text-[9px] font-black px-2 py-1 rounded-sm shadow-lg uppercase tracking-widest">Best</span>
+                        )}
+                     </div>
                      <button 
                        onClick={(e) => {
                          e.stopPropagation();
@@ -199,6 +207,45 @@ export default function Home({
                 </div>
               </motion.div>
             </AnimatePresence>
+          </div>
+        </div>
+      </section>
+
+      {/* Editor's Choice: Seasonal Collection */}
+      <section className="py-24 bg-[#003D27] overflow-hidden">
+        <div className="max-w-7xl mx-auto px-6 mb-16">
+          <div className="flex flex-col md:flex-row justify-between items-end gap-8">
+            <div className="space-y-4">
+              <div className="text-primary font-black tracking-widest uppercase text-xs">Editor's Choice</div>
+              <h2 className="text-4xl md:text-5xl font-bold font-serif text-white tracking-tight">
+                지금 가장 바른 선택<br/>계절을 담은 컬렉션
+              </h2>
+            </div>
+            <p className="text-white/40 text-sm font-light max-w-sm">
+              더 바른 농장의 큐레이터들이 직접 선별하고 구성한 금주의 컬렉션입니다. 균형 잡힌 맛과 영양을 한 번에 만나보세요.
+            </p>
+          </div>
+        </div>
+
+        <div className="flex gap-8 overflow-x-auto pb-12 px-6 scrollbar-hide">
+          <div className="max-w-7xl mx-auto flex gap-8">
+            {[1, 2, 3].map((i) => (
+              <div key={i} className="w-[300px] md:w-[450px] shrink-0 group cursor-pointer">
+                <div className="aspect-[4/5] rounded-[48px] overflow-hidden relative mb-8 editorial-shadow">
+                  <img 
+                    src={i === 1 ? 'https://images.unsplash.com/photo-1542838132-92c53300491e?q=80&w=1000' : i === 2 ? 'https://images.unsplash.com/photo-1610832958506-aa56368176cf?q=80&w=1000' : 'https://images.unsplash.com/photo-1595855759920-86582396756a?q=80&w=1000'}
+                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-1000"
+                    alt="Collection"
+                  />
+                  <div className="absolute inset-0 bg-black/40 group-hover:bg-black/20 transition-all flex flex-col justify-end p-10 text-white">
+                    <span className="text-[10px] font-black uppercase tracking-[0.2em] mb-2 opacity-60">Bundle Set 0{i}</span>
+                    <h4 className="text-2xl font-bold font-serif mb-6 opacity-0 group-hover:opacity-100 translate-y-4 group-hover:translate-y-0 transition-all underline underline-offset-8">
+                      {i === 1 ? '유기농 조식 꾸러미' : i === 2 ? '비타민 충전 과일 세트' : '주말 스테이크 정찬'}
+                    </h4>
+                  </div>
+                </div>
+              </div>
+            ))}
           </div>
         </div>
       </section>
