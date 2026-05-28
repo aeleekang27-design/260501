@@ -249,7 +249,7 @@ export default function Header({
                       onSave={(val) => onUpdateCategory?.(cat.id, val)}
                     />
                   </div>
-                  {cat.id !== '전체' && (
+                  {cat.id !== '전체' && isAdmin && (
                     <button 
                       onClick={(e) => {
                         e.stopPropagation();
@@ -270,14 +270,15 @@ export default function Header({
               ))}
             </Reorder.Group>
             
-            {/* Add Button */}
-            <button 
-              onClick={onCreateCategory}
-              className="w-10 h-10 rounded-full border-2 border-dashed border-stone-200 text-stone-300 hover:text-primary hover:border-primary/30 hover:bg-primary/5 transition-all flex items-center justify-center shrink-0 ml-4 group"
-              title="카테고리 추가"
-            >
-              <Plus size={24} strokeWidth={3} />
-            </button>
+            {isAdmin && (
+              <button 
+                onClick={onCreateCategory}
+                className="w-10 h-10 rounded-full border-2 border-dashed border-stone-200 text-stone-300 hover:text-primary hover:border-primary/30 hover:bg-primary/5 transition-all flex items-center justify-center shrink-0 ml-4 group"
+                title="카테고리 추가"
+              >
+                <Plus size={24} strokeWidth={3} />
+              </button>
+            )}
           </div>
         </div>
       </div>

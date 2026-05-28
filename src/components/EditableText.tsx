@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Edit2, Check, X, Trash2 } from 'lucide-react';
+import { useAuth } from '../hooks/useAuth';
 
 interface EditableTextProps {
   value: string | number;
@@ -22,6 +23,7 @@ export default function EditableText({
   multiline = false,
   type = 'text'
 }: EditableTextProps) {
+  const { isAdmin } = useAuth();
   const [isEditing, setIsEditing] = useState(false);
   const [tempValue, setTempValue] = useState(String(value));
   const [fontSize, setFontSize] = useState(initialFontSize || 0); // 0 means inherited
@@ -46,6 +48,18 @@ export default function EditableText({
     setFontSize(initialFontSize || 0);
     setIsEditing(false);
   };
+
+  // 소비자 화면: 편집 기능 비활성화, 텍스트만 표시
+  if (!isAdmin) {
+    return (
+      <span
+        className={`inline-block ${className}`}
+        style={{ fontSize: initialFontSize ? `${initialFontSize}px` : 'inherit' }}
+      >
+        {value}
+      </span>
+    );
+  }
 
   if (isEditing) {
     return (
@@ -128,7 +142,7 @@ export default function EditableText({
   }
 
   return (
-    <span 
+    <span
       className={`relative group inline-block ${className}`}
       style={{ fontSize: initialFontSize ? `${initialFontSize}px` : 'inherit' }}
     >

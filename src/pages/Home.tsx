@@ -5,6 +5,7 @@ import { ArrowRight, ShoppingCart, Plus, X } from 'lucide-react';
 import { Product } from '../types';
 import EditableText from '../components/EditableText';
 import EditableImage from '../components/EditableImage';
+import { useAuth } from '../hooks/useAuth';
 
 interface HomeProps {
   products: Product[];
@@ -34,13 +35,14 @@ export default function Home({
   filter,
   setFilter
 }: any) { // Use any briefly to avoid complex interface changes for now
+  const { isAdmin } = useAuth();
 
   const filteredProducts = filter === '전체' 
     ? products 
     : products.filter(p => p.category === filter);
 
   return (
-    <main className="overflow-hidden bg-[#F8F9FA]">
+    <main className="overflow-hidden bg-surface">
       {/* Featured Section */}
       <section className="pt-24 pb-12 bg-white px-6">
         <div className="max-w-7xl mx-auto">
@@ -136,13 +138,13 @@ export default function Home({
                         )}
                      </div>
                      <button 
-                       onClick={(e) => {
-                         e.stopPropagation();
-                         onDeleteProduct(p.id);
-                       }}
-                       className="absolute top-4 left-4 w-9 h-9 bg-red-500 text-white rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 -translate-y-2 group-hover:translate-y-0 transition-all duration-300 shadow-xl z-10 hover:scale-110 active:scale-95"
-                       title="상품 삭제"
-                     >
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          onDeleteProduct(p.id);
+                        }}
+                        className={`absolute top-4 left-4 w-9 h-9 bg-red-500 text-white rounded-full flex items-center justify-center -translate-y-2 transition-all duration-300 shadow-xl z-10 hover:scale-110 active:scale-95 ${isAdmin ? 'opacity-0 group-hover:opacity-100 group-hover:translate-y-0' : 'hidden'}`}
+                        title="상품 삭제"
+                      >
                        <X size={18} strokeWidth={3} />
                      </button>
                      <button 
@@ -192,20 +194,22 @@ export default function Home({
                 </motion.div>
               ))}
               
-              <motion.div 
-                layout
-                whileHover={{ y: -5 }}
-                onClick={() => onCreateProduct?.(filter === '전체' ? '과일' : filter)}
-                className="group cursor-pointer flex flex-col items-center justify-center p-8 rounded-[24px] border-2 border-dashed border-stone-200 bg-white/50 hover:bg-white hover:border-primary/30 transition-all aspect-[16/10] text-center space-y-4"
-              >
-                <div className="w-16 h-16 rounded-full bg-stone-100 group-hover:bg-primary/10 flex items-center justify-center transition-colors">
-                  <Plus className="text-stone-400 group-hover:text-primary transition-colors" size={24} />
-                </div>
-                <div>
-                  <p className="font-bold text-stone-600 group-hover:text-primary transition-colors">새 상품 추가</p>
-                  <p className="text-xs text-stone-400">"{filter === '전체' ? '과일' : filter}" 카테고리에<br/>새로운 상품을 등록합니다</p>
-                </div>
-              </motion.div>
+              {isAdmin && (
+                <motion.div 
+                  layout
+                  whileHover={{ y: -5 }}
+                  onClick={() => onCreateProduct?.(filter === '전체' ? '과일' : filter)}
+                  className="group cursor-pointer flex flex-col items-center justify-center p-8 rounded-[24px] border-2 border-dashed border-stone-200 bg-white/50 hover:bg-white hover:border-primary/30 transition-all aspect-[16/10] text-center space-y-4"
+                >
+                  <div className="w-16 h-16 rounded-full bg-stone-100 group-hover:bg-primary/10 flex items-center justify-center transition-colors">
+                    <Plus className="text-stone-400 group-hover:text-primary transition-colors" size={24} />
+                  </div>
+                  <div>
+                    <p className="font-bold text-stone-600 group-hover:text-primary transition-colors">새 상품 추가</p>
+                    <p className="text-xs text-stone-400">"{filter === '전체' ? '과일' : filter}" 카테고리에<br/>새로운 상품을 등록합니다</p>
+                  </div>
+                </motion.div>
+              )}
             </AnimatePresence>
           </div>
         </div>
@@ -282,7 +286,7 @@ export default function Home({
       </section>
 
       {/* Farm Story Section */}
-      <section className="py-32 bg-[#F8F9FA] px-6">
+      <section className="py-32 bg-surface px-6">
         <div className="max-w-7xl mx-auto">
           <div className="bg-white rounded-[48px] overflow-hidden editorial-shadow flex flex-col lg:flex-row">
             <div className="lg:w-1/2 p-12 lg:p-24 space-y-12">

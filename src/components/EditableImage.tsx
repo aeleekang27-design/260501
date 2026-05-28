@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Camera, Upload, Image as ImageIcon, Check, X, Monitor, ExternalLink } from 'lucide-react';
+import { useAuth } from '../hooks/useAuth';
 
 interface EditableImageProps {
   src: string;
@@ -19,6 +20,7 @@ export default function EditableImage({
   detailUrl,
   objectFit = 'cover'
 }: EditableImageProps) {
+  const { isAdmin } = useAuth();
   const [isHovered, setIsHovered] = useState(false);
   const [isFocused, setIsFocused] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
@@ -167,6 +169,23 @@ export default function EditableImage({
       processItems(e.dataTransfer.files);
     }
   };
+
+  // 소비자 화면: 이미지 교체 불가, detailUrl만 동작
+  if (!isAdmin) {
+    return (
+      <div className={`relative overflow-hidden ${className}`}>
+        <img
+          src={currentSrc}
+          alt={alt}
+          className={`w-full h-full transition-transform duration-700 ${detailUrl ? 'cursor-pointer hover:scale-105' : ''}`}
+          style={{ objectFit }}
+          referrerPolicy="no-referrer"
+          onError={() => setCurrentSrc('https://picsum.photos/seed/nature/800/800')}
+          onClick={() => { if (detailUrl) navigate(detailUrl); }}
+        />
+      </div>
+    );
+  }
 
   return (
     <div 
