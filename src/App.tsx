@@ -683,7 +683,12 @@ export default function App() {
             path="/admin" 
             element={
               isAdmin ? (
-                <AdminDashboard products={products} onUpdateProduct={handleUpdateProduct} />
+                <AdminDashboard 
+                  products={products} 
+                  onUpdateProduct={handleUpdateProduct} 
+                  onDeleteProduct={handleDeleteProduct} 
+                  onCreateProduct={handleCreateProduct} 
+                />
               ) : (
                 <div className="min-h-screen flex items-center justify-center">
                   <div className="text-center">
